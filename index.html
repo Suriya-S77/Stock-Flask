@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockPulse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        header.navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #004a94dd;
+            padding: 10px 20px;
+            color: white;
+            position: relative;
+        }
+
+        .navbar .logo {
+            font-size: 1.5rem;
+        }
+
+        .navbar .logo span {
+            color: goldenrod;
+        }
+
+        nav ul.nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            margin: 0;
+            position: absolute;
+            right: 60px; 
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        nav ul.nav-links li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav ul.nav-links li a:hover {
+            background-color: goldenrod;
+            color: white;
+        }
+
+        .user-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .hero h1 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 2.0rem;
+        }
+
+        .phone-form {
+            margin: 2px auto;
+            width: 80%;
+            text-align: center;
+        }
+
+        .phone-form input {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .phone-form button {
+            background-color: goldenrod;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .phone-form button:hover {
+            background-color: rgb(254, 182, 0);
+        }
+
+        #contact {
+            background-color: white;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Stock<span>Pulse</span></div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="user-icon" onclick="toggleMenu()">
+            <i class="bi bi-person-circle"></i>
+        </div>
+    </header>
+    <div class="menu-bar" id="menuBar">
+        <div class="user-details">
+            <i class="bi bi-person-circle"></i>
+            <p id="usernameDisplay">Username</p>
+            <p id="emailDisplay">Email: user@example.com</p>
+            <p id="phoneDisplay">Phone: +91 0123456789</p>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    <main>
+        <section id="home" class="hero">
+            <h1>Welcome to Stock<span style="color: goldenrod;">Pulse !</span></h1>
+            <h4>Stay ahead of the market with real-time insights, tailored just for you!</h4>
+            
+            <section id="about" class="about">
+                <p style="word-spacing: 2px;letter-spacing: 1px;"><b>Stock<span style="color: goldenrod;">Pulse </b>keeps you in sync with the heartbeat of the stock market, specializing in Tesla updates. Get real-time alerts, breaking news, and insightful trends right at your fingertips. With its sleek interface and seamless functionality, StockPulse empowers you to make informed financial decisions effortlessly.</p>
+            </section>
+
+            <form class="phone-form" action="/send_update" method="POST">
+                <input name="phone" id="phone" placeholder="Enter your phone number Registered on Twilio (e.g., +91123456789)" required maxlength="13" style="margin-bottom: 0px;">
+                <p id="phoneError" class="error-msg" style="color: red;"></p>
+                <p style="margin-top: 2px;">Not registered? <a href="https://login.twilio.com/u/signup" style="color: goldenrod;">Register here</a></p>
+                <button type="submit" style="font-size: medium;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Send</button>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <p style="color: rgb(6, 179, 6); margin-top: 10px;" class="success-msg">{{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </form>            
+        </section>
+    </main>
+
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <form class="contact-form" action="/contact" method="POST">
+            <label for="email">Your Email</label>
+            <input type="email" name="email" id="email" placeholder="Enter your email" required>
+            
+            <label for="number">Your Number</label>
+            <input type="text" name="number" id="number" placeholder="Enter your phone number" required maxlength="13">
+            
+            <label for="message">Your Message</label>
+            <textarea name="message" id="message" placeholder="Write your message here..." rows="4" required></textarea>
+            
+            <button type="submit">Send Message</button>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <p style="color: green; margin-top: 10px;" class="success-msg">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </form>
+    </section>
+
+    <footer>
+        <p style="padding: 0px;">&copy; 2024 StockPulse. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            var menuBar = document.getElementById("menuBar");
+            menuBar.classList.toggle("active");
+        }
+    
+        document.addEventListener("click", function(event) {
+            var menuBar = document.getElementById("menuBar");
+            var userIcon = document.querySelector(".user-icon");
+    
+            if (!menuBar.contains(event.target) && !userIcon.contains(event.target)) {
+                menuBar.classList.remove("active");
+            }
+        });
+    
+        function logout() {
+            localStorage.removeItem("userData");
+            document.getElementById("menuBar").classList.remove("active");
+            window.location.href = "{{ url_for('login') }}";
+        }
+    
+        window.onload = function() {
+            const userData = JSON.parse(localStorage.getItem("userData"));
+    
+            if (userData) {
+                document.getElementById("usernameDisplay").textContent = userData.username;
+                document.getElementById("emailDisplay").textContent = "Email: " + userData.email;
+                document.getElementById("phoneDisplay").textContent = "Phone: " + userData.phone;
+    
+                const menuBar = document.querySelector(".menu-bar");
+
+                const userInfo = `
+                    <div class="user-info">
+                        <p><strong>Username:</strong> ${userData.username}</p>
+                        <p><strong>Email:</strong> ${userData.email}</p>
+                        <p><strong>Phone:</strong> ${userData.phone}</p>
+                    </div>
+                `;
+    
+                if (!menuBar.querySelector(".user-info")) {
+                    menuBar.innerHTML += userInfo;
+                }
+            }
+        };
+    </script>        
+</body>
+</html>
